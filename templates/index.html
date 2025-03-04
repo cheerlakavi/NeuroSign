@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static\images\home.css">
+    <title>Gesture Recognition</title>
+    <script>
+        let intervalId = null;
+        let videoStream = null;
+
+        async function startCapture() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const output = document.getElementById('output');
+            const predictButton = document.getElementById('predict-btn');
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = videoStream;
+
+                // Disable predict button while capturing
+                predictButton.disabled = true;
+
+                intervalId = setInterval(() => {
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const frame = canvas.toDataURL('image/jpeg');
+
+                    fetch('/process_frame', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: frame })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        output.src = data.image;
+                        console.log('Gesture Recognition Result:', data.result);
+                    })
+                    .catch(error => {
+                        console.error('Error sending frame:', error);
+                    });
+                }, 100);
+            } catch (error) {
+                console.error('Error accessing webcam:', error);
+            }
+        }
+
+        function stopCapture() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            document.getElementById('video').srcObject = null;
+
+            // Clear output image and prediction text when stopping
+            document.getElementById('output').src = "";
+            document.getElementById('prediction-box').innerText = "Predicted Text Will Appear Here";
+
+            // Enable predict button when capturing stops
+            document.getElementById('predict-btn').disabled = false;
+        }
+
+        async function predictText() {
+            fetch('/predict', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('prediction-box').innerText = data.prediction;
+            })
+            .catch(error => {
+                console.error('Error predicting text:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="navbar">
+            <img src="static\images\logo.jpeg" alt="SpaceECE" class="logo">
+            <h1 class="main-heading">Sign To Language Translator</h1>
+        </header>
+
+        <main class="content">
+            <h2>Gesture Recognition Stream</h2>
+            <video id="video" autoplay playsinline style="display:none;"></video>
+            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+            <img id="output" style="width:640px;height:480px;" />
+
+            <div class="info">
+                <p>AI Based Gesture Recognition Tool</p>
+            </div>
+
+            <!-- Start & Stop Buttons -->
+            <button onclick="startCapture()" style="margin-left: auto; margin-right: auto;">Start Gesture Recognition</button>
+            <button onclick="stopCapture()" style="margin-left: auto; margin-right: auto;">Stop Gesture Recognition</button>
+
+            <!-- Predict Button (Initially enabled) -->
+            <button id="predict-btn" onclick="predictText()" style="margin-left: auto; margin-right: auto;">Predict</button>
+
+            <!-- Display Prediction -->
+            <div id="prediction-box" style="margin-top: 20px; padding: 10px; border: 1px solid black; width: 300px; min-height: 50px; margin-left: auto; margin-right: auto;">
+                Predicted Text Will Appear Here
+            </div>
+        </main>
+    </div>
+</body>
+</html>

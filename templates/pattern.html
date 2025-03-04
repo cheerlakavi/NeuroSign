@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Assessment</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .pattern-body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        
+        .logo-container {
+            width: 100%;
+            padding: 20px 0 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #quiz-container div{
+            padding: 5px;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-left: 20px;
+        }
+        .frame {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 800px;
+            margin: auto;
+            text-align: center;
+            min-height: 580px;
+            margin-top: -20px;
+        }
+
+        .question-container {
+            font-size: 20px;
+            color:  gray;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sequence {
+            font-size: 30px;
+            margin: 15px 0;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid gray;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: white;
+            width: 120px;
+        }
+
+        .option-btn:hover {
+            border-color: goldenrod;
+            background: #fff8dc;
+        }
+
+        .selected {
+            border-color: goldenrod !important;
+            background: #fff8dc !important;
+        }
+
+        .btn-container {
+            margin-left: 20vw;
+            margin-top: 20px;
+            margin: 20px 0 0 18vw;
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .nav-btn:hover {
+            background-color: darkgoldenrod;
+        }
+
+        #start-btn {
+            font-size: 20px;
+            padding: 10px 15px;
+        }
+
+        .main-text {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+            color:  gray;
+        }
+
+        .image-container img {
+            width: 100%;
+            margin-top: 10px;
+            height: 400px;
+            border-radius: 5px;
+        }
+        .pattern-body hr {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body class="pattern-body">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo" class="logo">
+        <hr>
+    </div>
+    <div id="front-page" class="frame">
+        <h2>Welcome to the Pattern Assessment</h2>
+        <p class="main-text">Test your ability to recognize patterns.</p>
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/pattern.png') }}" alt="Pattern Introduction">
+        </div>
+        <button id="start-btn" class="nav-btn">Start</button>
+    </div>
+    <div id="quiz-container" class="frame" style="display: none;">
+        <h2 style="margin-top: 100px;">Pattern Assessment</h2>
+        <p id="instruction-text" style="font-weight: bold; color: #777; display: none; font-size: 20px;">
+            Follow the Instruction and Answer correctly
+        </p>
+        <div id="question-container" class="question-container"></div>
+        <div id="sequence" class="sequence"></div>
+        <div id="options-container" class="options-container"></div>
+        <div class="btn-container">
+            <button id="prev-btn" class="nav-btn" style="display: none;">Previous</button>
+            <button id="next-btn" class="nav-btn">Next</button>
+        </div>
+    </div>
+    <div id="result-page" class="frame" style="display: none;">
+        <h2>Assessment Completed!</h2>
+        <p id="score-text"></p>
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/result.jpeg') }}" alt="Score Result">
+        </div>
+        <button id="restart-btn" class="nav-btn">Restart</button>
+        <button id="exit-btn" class="nav-btn" onclick="window.location.href='/activity'">Exit</button>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentIndex = 0;
+        let selectedAnswers = {};
+        let score = 0;
+
+        function fetchQuestions() {
+            $.ajax({
+                url: '/get_patterns',
+                method: 'GET',
+                success: function(data) {
+                    questions = data;
+                    loadQuestion(currentIndex);
+                },
+                error: function(error) {
+                    console.error("Error fetching questions:", error);
+                }
+            });
+        }
+        function loadQuestion(index) {
+            let question = questions[index];
+            $("#question-container").text(question.question);
+            $("#sequence").html(question.sequence.join(" "));
+            $("#options-container").html("");
+
+            for (let key in question.options) {
+                let selectedClass = selectedAnswers[index] === key ? "selected" : "";
+                $("#options-container").append(
+                    `<button class="option-btn ${selectedClass}" data-choice="${key}">${question.options[key]}</button>`
+                );
+            }
+            if (index === 0) {
+                $("#instruction-text").show();
+                $("#prev-btn").hide(); 
+            } else {
+                $("#instruction-text").hide();
+                $("#prev-btn").show();
+            }
+            $("#next-btn").text(index === questions.length - 1 ? "Submit" : "Next");
+        }
+        $(document).ready(function() {
+            $("#start-btn").click(function() {
+                $("#front-page").hide();
+                $("#quiz-container").show();
+                fetchQuestions();
+            });
+            $(document).on("click", ".option-btn", function() {
+                $(".option-btn").removeClass("selected");
+                $(this).addClass("selected");
+                selectedAnswers[currentIndex] = $(this).data("choice");
+            });
+            $("#next-btn").click(function() {
+                if (!selectedAnswers[currentIndex]) {
+                    alert("Please select an option before proceeding.");
+                    return;
+                }
+
+                if (currentIndex < questions.length - 1) {
+                    currentIndex++;
+                    loadQuestion(currentIndex);
+                } else {
+                    score = 0;
+                    questions.forEach((q, i) => {
+                        if (selectedAnswers[i] === q.answer) {
+                            score++;
+                        }
+                    });
+
+                    $("#quiz-container").hide();
+                    $("#result-page").show();
+                    $("#score-text").text(`You scored ${score} out of ${questions.length}`);
+                }
+            });
+            $("#prev-btn").click(function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadQuestion(currentIndex);
+                }
+            });
+            $("#restart-btn").click(function() {
+                currentIndex = 0;
+                selectedAnswers = {};
+                score = 0;
+                $("#result-page").hide();
+                $("#front-page").show();
+            });
+        });
+    </script>
+
+</body>
+</html>

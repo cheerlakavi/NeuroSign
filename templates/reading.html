@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dyslexia Detection</title>
+    <style>
+        .reading-class {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+        }
+        .reading-class h2 {
+            font-size: 24px;
+            color: #ffb700;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffb700;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: black;
+        }
+        .button:hover {
+            background-color: #e69e00;
+        }
+        .feedback {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body class="reading-class">
+    <div class="container" id="text-screen">
+        <h2>Read the paragraph aloud:</h2>
+        <p id="paragraph">This is an example paragraph in English. Please read it aloud.</p>
+        <button class="button" onclick="startRecognition()">Start Speaking</button>
+        <p id="user-speech" class="feedback"></p>
+        <p id="feedback-message" class="feedback"></p>
+    </div>
+
+    <script>
+        let correctText = "This is an example paragraph in English. Please read it aloud.";
+
+        function startRecognition() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                document.getElementById("user-speech").textContent = "Listening...";
+            };
+
+            recognition.onresult = function(event) {
+                const userSpeech = event.results[0][0].transcript;
+                document.getElementById("user-speech").textContent = "You said: " + userSpeech;
+                evaluateSpeech(userSpeech);
+            };
+
+            recognition.onerror = function() {
+                document.getElementById("user-speech").textContent = "Error occurred, please try again.";
+            };
+
+            recognition.start();
+        }
+
+        function evaluateSpeech(userSpeech) {
+            const originalWords = correctText.toLowerCase().split(" ");
+            const userWords = userSpeech.toLowerCase().split(" ");
+            let errors = 0;
+
+            for (let i = 0; i < originalWords.length; i++) {
+                if (userWords[i] !== originalWords[i]) {
+                    errors++;
+                }
+            }
+
+            let feedbackMessage = document.getElementById("feedback-message");
+            if (errors > 5) {
+                feedbackMessage.innerHTML = "<span style='color: red;'>Major Dyslexia Detected</span><br>Try phonics exercises and consult a speech therapist.";
+            } else if (errors > 2) {
+                feedbackMessage.innerHTML = "<span style='color: orange;'>Minor Dyslexia Detected</span><br>Practice reading aloud and use speech improvement apps.";
+            } else {
+                feedbackMessage.innerHTML = "<span style='color: green;'>No Dyslexia Detected</span><br>Great job!";
+            }
+        }
+    </script>
+</body>
+</html>

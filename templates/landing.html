@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HomePage</title>
+  <style>
+    .home-body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9fafb;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      padding: 10px 20px;
+      margin: 10px 0 0 0;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links {
+      margin-left: -2000px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: white;
+      color: #ffb700;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background-color: #ffb700;
+      color: white;
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .auth-buttons a {
+      text-decoration: none;
+      padding: 8px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      color: white;
+      background-color: #ffb700
+    }
+
+    .auth-buttons a:hover {
+      background-color: #e69e00
+    }
+
+    .home-body section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90vh;
+      text-align: center;
+    }
+
+    .home-body h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    .highlight {
+      color: #ffb700;
+    }
+
+    .home-body p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    .btn-group {
+      margin-top: 15px;
+    }
+
+    .btn {
+      background-color: #ffb700;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: #e69e00;
+    }
+
+    .btn-secondary {
+      background: none;
+      margin-left: 20px;
+      color: #ffb700;
+      border: 2px solid #ffb700;
+    }
+
+    .btn-secondary:hover {
+      color: white;
+      border-color: #e69e00;
+    }
+    .home-body hr {
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+    .logo-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .logo {
+        width: 80px;
+        height: auto;
+        margin-left: 20px;
+    }
+  </style>
+</head>
+
+<body class="home-body">
+
+  <header class="navbar">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo" class="logo">
+      <!-- <hr> -->
+    </div>
+    <nav class="nav-links">
+      <a href="#">About</a>
+      <a href="#">Careers</a>
+      <a href="#">History</a>
+      <a href="#">Services</a>
+      <a href="#">Projects</a>
+    </nav>
+    <div class="auth-buttons">
+      <a href="/login" class="login-btn">Login</a>
+      <a href="/login" class="register-btn">Register</a>
+    </div>
+  </header>
+
+  <section style="margin-top: -80px;">
+    <div>
+      <h1>Understand User Flow. <br><span class="highlight">Increase Conversion.</span></h1>
+      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt illo tenetur fuga ducimus numquam ea!</p>
+      <div class="btn-group">
+        <a href="/login" class="btn">Get Started</a>
+        <a href="#" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+
+</html>

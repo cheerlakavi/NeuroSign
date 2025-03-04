@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+    
+        .assessment-body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 100vw;
+            margin: 0 ;
+        }
+
+        .logo-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-left: 20px;
+        }
+        #start-btn, #continue-btn, #go-back-btn {
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        #start-btn:hover, #continue-btn:hover, #go-back-btn:hover {
+            background-color: darkgoldenrod;
+        }
+
+        #start-image {
+            width: 400px;
+            height: 400px;
+        }
+
+        .frame {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            width: 70%;
+            margin: auto;
+            text-align: center;
+        }
+
+        .assessment-body h2, .assessment-body h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .assessment-body h3 {
+            color: gray;
+        }
+
+        #age-range {
+            padding: 12px;
+            font-size: 18px;
+            width: 250px;
+        }
+
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);  
+            gap: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px; 
+            padding: 12px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;  
+        }
+
+        .option-btn:hover {
+            background: #f8f8f8;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-selected {
+            border: 2px solid goldenrod !important;
+            background: #fffbe6;
+            box-shadow: 2px 2px 12px rgba(218, 165, 32, 0.5);
+        }
+
+        #quiz-container {
+            width: 60%;
+            margin: auto;
+            min-height: auto;
+            margin-top: -30px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 100px;
+            justify-content: space-around;
+        }
+
+        .prev-btn {
+            border: 2px solid goldenrod;
+            background: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .prev-btn:hover {
+            background: #fffbe6;
+        }
+
+        .next-btn {
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .next-btn:hover {
+            background-color: darkgoldenrod;
+        }
+
+        .submit-btn {
+            background-color: goldenrod;
+        }
+
+        #result-container {
+            min-height: 60vh;
+            width: 70%;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            text-align: left;
+            margin-top: -20px;
+        }
+
+        .frame {
+            margin-top: -25px;
+            width: 70%;
+            max-height: 650px;
+        }
+
+        #question-image {
+            width: 300px; 
+            height: 300px;
+        }
+
+        .dropdown-container {
+            text-align: center;
+        }
+
+        #age-range {
+            display: block;
+            margin: 0 auto; 
+        }
+
+        #ai-suggestions {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #result-image {
+            width: 400px;
+            height: 200px;
+        }
+        .assessment-body hr {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+            
+    </style>
+</head>
+<body class="assessment-body">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo" class="logo">
+        <hr>
+    </div>
+    
+    <div class="container">
+        <div class="frame" id="start-page">
+            <h2 style="margin-top: -15px;">Let’s Begin the Assessment</h2>
+            <h3>This will help us understand how you learn best!</h3>
+            <h3>Assessment Activities</h3>
+            <img id="start-image" src="{{ url_for('static', filename='images/assessment.png') }}" alt="Assessment Image">
+            <div>
+                <button id="start-btn">Start Assessment</button>
+            </div>
+        </div>
+
+        <div class="frame" id="assessment-page" style="display: none;">
+            <h2>Choose your Age</h2>
+            <img src="{{ url_for('static', filename='images/agerange.png') }}" alt="Age Selection Image" style="width: 300px; height: 300px; margin-bottom: 20px;">
+            <select id="age-range">
+                <option value="0-3">0 - 3 years</option>
+                <option value="4-5">4 - 5 years</option>
+                <option value="6-8">6 - 8 years</option>
+            </select>
+            <div class="btn-container">
+                <button id="go-back-btn">Go Back</button>
+                <button id="continue-btn">Continue</button>
+            </div>
+        </div>
+
+        <div id="quiz-container" style="display: none;">
+            <h2 style="margin-top: -15px;">Starting Assessment</h2>
+            <h3>Please follow the instructions carefully</h3>
+            <h3 id="question-number">Question 1 of 10</h3>
+            <h2 id="question-text" class="question"></h2>
+            <img id="question-image" src="" alt="Question Image" style="width: auto; height: 200px; margin-bottom: 20px;">
+            <div id="options-container" class="options-grid"></div>
+
+            <div class="btn-container">
+                <button id="prev-btn" class="prev-btn" style="display: none;">Previous</button>
+                <button id="next-btn" class="next-btn">Next</button>
+            </div>
+        </div>
+        <div id="result-container" style="display: none;">
+            <img id="result-image" src="{{ url_for('static', filename='images/result.jpeg') }}" alt="Result Image">
+            <h2 id="score-text" style="margin-top: 20px;"></h2>
+        
+            <h3>Suggestions</h3>
+            <div id="ai-suggestions"></div> 
+            <div style="display: flex; justify-content: center; gap: 10px;">
+                <button id="start-btn" onclick="window.location.href='/activity'">Exit</button>
+                <button id="start-btn" onclick="restartQuiz()">Retry</button>
+            </div>
+            
+            <h3>Video Recommendations</h3>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                <iframe width="400" height="250" src="https://www.youtube.com/embed/V3rbevc-5Ac?si=6DiPo3iAOa2XsJHu" frameborder="0" allowfullscreen></iframe>
+                <iframe width="400" height="250" src="https://www.youtube.com/embed/Dpo6H_xYwgg?si=UNnTLzxydsfj3CV6" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswers = {};
+
+        function fetchQuestions() {
+            $.ajax({
+                url: '/get_questions', 
+                method: 'GET',
+                success: function(data) {
+                    questions = data;
+                    console.log(questions); 
+                },
+                error: function(error) {
+                    console.error("Error fetching questions:", error);
+                }
+            });
+        }
+
+        function loadQuestionsByAgeRange(ageRange) {
+            if (ageRange === "0-3") {
+                questions = questions.slice(0, 10); 
+            } else if (ageRange === "4-5") {
+                questions = questions.slice(10, 20);
+            } else {
+                questions = questions.slice(20, 30);
+            }
+        }
+
+        function loadQuestion(index) {
+            let question = questions[index];
+            $("#question-number").text(`Question ${index + 1} of ${questions.length}`);
+            $("#question-text").text(question.question);
+
+            $("#question-image").attr("src", question.image); 
+
+            let optionsHtml = "";
+            for (let i = 1; i <= 4; i++) {
+                let choice = question["choice" + i];
+                let selectedClass = (selectedAnswers[index] === choice) ? "option-selected" : "";
+                optionsHtml += `<button class="option-btn ${selectedClass}" data-choice="${choice}">${choice}</button>`;
+            }
+            $("#options-container").html(optionsHtml);
+
+            $("#prev-btn").toggle(index > 0);
+
+            if (index === questions.length - 1) {
+                $("#next-btn").text("Submit").addClass("submit-btn");
+            } else {
+                $("#next-btn").text("Next").removeClass("submit-btn");
+            }
+            if (index === 0) {
+                $("#quiz-container h2:first, #quiz-container h3:first").show();
+            } else {
+                $("#quiz-container h2:first, #quiz-container h3:first").hide();
+            }
+        }
+
+        $(document).ready(function() {
+            fetchQuestions();
+
+            $("#start-btn").click(function() {
+                $("#start-page").hide();
+                $("#assessment-page").show();
+            });
+
+            $("#continue-btn").click(function() {
+                let selectedAgeRange = $("#age-range").val();
+                loadQuestionsByAgeRange(selectedAgeRange);
+                $("#assessment-page").hide();
+                $("#quiz-container").show();
+                loadQuestion(currentQuestionIndex);
+            });
+
+            $("#go-back-btn").click(function() {
+                $("#assessment-page").hide();
+                $("#start-page").show();
+            });
+
+            $(document).on("click", ".option-btn", function() {
+                $(".option-btn").removeClass("option-selected");
+                $(this).addClass("option-selected");
+
+                let selectedChoice = $(this).attr("data-choice");
+                selectedAnswers[currentQuestionIndex] = selectedChoice;
+            });
+
+            $("#prev-btn").click(function() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+
+            $("#next-btn").click(function () {
+                if (!selectedAnswers[currentQuestionIndex]) {
+                    alert("Please select an option before proceeding.");
+                    return;
+                }
+            
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion(currentQuestionIndex);
+                } else {
+                    score = 0;
+                    questions.forEach((q, i) => {
+                        if (selectedAnswers[i] === q.answer) {
+                            score++;
+                        }
+                    });
+                
+                    $("#quiz-container").hide();
+                    $("#score-text").html(`Your Score: ${score}`);
+                
+                    $.ajax({
+                        url: `/get_suggestions?score=${score}`,
+                        method: 'GET',
+                        success: function (data) {
+                            let suggestionsHtml = "";
+                            data.suggestions.forEach(suggestion => {
+                                suggestionsHtml += `<p style={padding:-2px;}>${suggestion}</p>`;  // Display as paragraphs
+                            });
+                            $("#ai-suggestions").html(suggestionsHtml);
+                        },
+                        error: function (error) {
+                            console.error("Error fetching suggestions:", error);
+                        }
+                    });
+
+                
+                    $("#result-container").show();
+                }
+            });
+
+        });
+
+        function restartQuiz() {
+            selectedAnswers = {};
+            currentQuestionIndex = 0;
+            score = 0;
+            $("#result-container").hide();
+            $("#assessment-page").show();
+        }
+    </script>
+</body>
+</html>
+

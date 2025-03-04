@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .login-body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #fff5cc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        .logo-container {
+            width: 100%;
+            padding: 20px 0 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-left: 20px;
+        }
+
+        .login-body hr {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            height: 80%;
+            gap: 50px;
+        }
+        .left-section {
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-section img {
+            width: 600px;
+            height: 600px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .right-section {
+            width: 40%;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .right-section h2 {
+            margin-bottom: 15px;
+        }
+
+        .login-body input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-body button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffbf00;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 12px;
+        }
+
+        .login-body button:hover {
+            background-color: #e6ac00;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .register-extra-fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            column-gap: 50px; 
+            margin-top: 20px;
+        }
+        #registerBox{
+            margin-top: -30px;
+        }
+
+    </style>
+</head>
+<body class="login-body">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo" class="logo">
+        <hr>
+    </div>
+
+    <div class="main-container">
+        <div class="left-section">
+            <img src="{{ url_for('static', filename='images/login.png') }}" alt="auth-image" width="200px" height="200px" class="auth-image">
+        </div>
+
+        <div class="right-section">
+            <div id="loginBox">
+                <h2>Login</h2>
+                <p>Login to continue using the app</p>
+                <form id="loginForm">
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <button type="submit">Login</button>
+                </form>
+                <p>Don't have an account? <a href="" id="showRegister">Register</a></p>
+            </div>
+            <div id="registerBox" class="hidden">
+                <h2>Register</h2>
+                <p>Enter your personal information</p>
+                <form id="registerForm">
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                    <input type="password" id="registerPassword" placeholder="Enter your password" required>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+
+                    <div class="register-extra-fields">
+                        <input type="text" id="childName" placeholder="Child Name" required>
+                        <input type="number" id="childAge" placeholder="Age" required>
+                        <input type="text" id="childGender" placeholder="Gender" required>
+                        <input type="text" id="birthPlace" placeholder="Place of Birth" required>
+                    </div>
+
+                    <button type="submit">Register</button>
+                </form>
+                <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#showRegister").click(function (e) {
+                e.preventDefault();
+                $("#loginBox").hide();
+                $("#registerBox").show();
+            });
+        
+            $("#showLogin").click(function (e) {
+                e.preventDefault();
+                $("#registerBox").hide();
+                $("#loginBox").show();
+            });
+        
+            $("#registerForm").submit(function (event) {
+                event.preventDefault();
+            
+                let username = $("#username").val().trim();
+                let email = $("#registerEmail").val().trim();
+                let password = $("#registerPassword").val().trim();
+                let confirmPassword = $("#confirmPassword").val().trim();
+                let name = $("#childName").val().trim();
+                let age = $("#childAge").val().trim();
+                let gender = $("#childGender").val().trim();
+                let placeofbirth = $("#birthPlace").val().trim();
+            
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+            
+                let userData = {
+                    username: username,
+                    email: email,
+                    password: password,
+                    name: name,
+                    age: parseInt(age),
+                    gender: gender,
+                    placeofbirth: placeofbirth
+                };
+            
+                $.ajax({
+                    url: "http://127.0.0.1:5000/registerapi",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(userData),
+                    success: function (response) {
+                        alert(response.message);
+                        $("#registerBox").hide();
+                        $("#loginBox").show();
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+        
+            $("#loginForm").submit(function (event) {
+                event.preventDefault();
+            
+                let email = $("#loginEmail").val().trim();
+                let password = $("#loginPassword").val().trim();
+            
+                let loginData = {
+                    email: email,
+                    password: password
+                };
+            
+                $.ajax({
+                    url: "http://127.0.0.1:5000/loginapi",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(loginData),
+                    success: function (response) {
+                        alert(response.message);
+                        window.location.href = "/onboarding";
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
